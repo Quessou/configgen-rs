@@ -20,6 +20,7 @@ ron = { version = "0.8", optional = true }
 json5_rs = { version = "0.4", optional = true, package = "json5" }
 convert_case = { version = "0.6", optional = true }
 serde = {version = "1.0.173", features = ["derive", "std"]}
+thiserror = "1.0.44"
 
 [dev-dependencies]
 temp-dir = "0.1.11"

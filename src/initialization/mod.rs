@@ -5,6 +5,7 @@ use std::io::{BufWriter, Write};
 
 use crate::DefaultConfig;
 use crate::SerializationFormat;
+use crate::Error as ConfiggenError;
 
 use serde::Serialize;
 #[cfg(feature = "json")]
@@ -54,12 +55,13 @@ pub fn initialize_config_file(
     config: &(impl DefaultConfig + Serialize),
     config_file_path: &PathBuf, 
     format: SerializationFormat,
-) -> Result<(), std::io::Error> {
+) -> Result<(), ConfiggenError> {
     if config_file_path.exists() {
-        return Err(std::io::Error::new(std::io::ErrorKind::AlreadyExists, "File already exists"));
+        let source_error = std::io::Error::new(std::io::ErrorKind::AlreadyExists, "File already exists");
+        return Err(ConfiggenError::ConfigDirectoryAlreadyExists(source_error));
     }
 
-    let data : Result<String, Box<dyn Error>> = match format {
+    let data : Result<String, Box<dyn Error + Send + Sync>> = match format {
         #[cfg(feature = "json")]
         SerializationFormat::Json =>  { match serde_json::to_string(&config) {
             Ok(s) => Ok(s),
@@ -84,15 +86,15 @@ pub fn initialize_config_file(
         _ => Err(Box::new(std::io::Error::new(std::io::ErrorKind::Unsupported, "Could not serialize the default configuration (Haven't you forgot to enable the required feature ?)")))
     };
 
-    if data.is_err() {
-       return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "Parsing failed") )
+    if let Err(e) = data {
+       return Err(ConfiggenError::SerializationFailed(e));
     }
     let data = data.unwrap();
 
     let mut writer : BufWriter<File> = BufWriter::new(File::create(config_file_path).unwrap());
     match writer.write(data.as_bytes()) {
         Ok(_) => Ok(()),
-        Err(e) => Err(e)
+        Err(e) => Err(ConfiggenError::WritingFailed(e))
     }
 }
 
@@ -172,6 +174,7 @@ mod tests {
 
     assert_eq!(read_config, dummy_config);
     }
+
     #[test]
     pub fn test_initialize_config_file_ron() {
 

@@ -1,6 +1,8 @@
 pub mod enums;
+pub mod errors;
 pub mod initialization;
 pub mod traits;
 
-pub use enums::serialization_format::SerializationFormat;
-pub use traits::default_config::DefaultConfig;
+pub use enums::SerializationFormat;
+pub use errors::Error;
+pub use traits::DefaultConfig;
