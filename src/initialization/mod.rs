@@ -26,15 +26,19 @@ use ron;
 /// * Ok(()) if the creation went fine
 /// * Err(std::io::ErrorKind::AlreadyExists) if the directory already exists
 /// * The error returned by `std::fs::create_dir` if it fails
-pub fn create_config_dir(dir_to_create: PathBuf) -> Result<(), std::io::Error> {
+pub fn create_config_dir(dir_to_create: PathBuf) -> Result<(), ConfiggenError> {
     if dir_to_create.exists() {
-        return Err(std::io::Error::new(
+        let source_error = std::io::Error::new(
             std::io::ErrorKind::AlreadyExists,
-            "Config directory already exists",
-        ));
+            "Config directory already exists");
+
+        return Err(ConfiggenError::ConfigDirectoryAlreadyExists(source_error));
     }
 
-    create_dir(dir_to_create)
+    if let Err(e) = create_dir(dir_to_create) {
+        return Err(ConfiggenError::ConfigDirectoryCreationFailed(e));
+    }
+    Ok(())
 }
 
 
@@ -58,7 +62,7 @@ pub fn initialize_config_file(
 ) -> Result<(), ConfiggenError> {
     if config_file_path.exists() {
         let source_error = std::io::Error::new(std::io::ErrorKind::AlreadyExists, "File already exists");
-        return Err(ConfiggenError::ConfigDirectoryAlreadyExists(source_error));
+        return Err(ConfiggenError::ConfigFileAlreadyExists(source_error));
     }
 
     let data : Result<String, Box<dyn Error + Send + Sync>> = match format {
