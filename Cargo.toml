@@ -1,0 +1,31 @@
+[package]
+name = "configgen-rs"
+version = "0.1.1"
+edition = "2021"
+rust-version = "1.70.0"
+description = "An attempt to make a crate based on config that generates a default configuration file on the filesystem if it does not exist yet"
+authors = ["Maxime Mikotajewski <maximemikotajewski@gmail.com>"]
+categories = ["configuration", "encoding"]
+readme = "README.md"
+license-file = "LICENSE"
+repository = "https://github.com/Quessou/configgen-rs"
+
+[features]
+json = ["serde_json"]
+json5 = ["json5_rs"]
+convert-case = ["convert_case"]
+default = ["toml", "json", "ron", "json5", "convert-case"]
+
+[dependencies]
+# config = "0.13.3" # Is this useful ?
+tracing = "0.1.37"
+toml = { version = "0.7", optional = true }
+serde_json = { version = "1.0.2", optional = true }
+ron = { version = "0.8", optional = true }
+json5_rs = { version = "0.4", optional = true, package = "json5" }
+convert_case = { version = "0.6", optional = true }
+serde = {version = "1.0.173", features = ["derive", "std"]}
+thiserror = "1.0.44"
+
+[dev-dependencies]
+temp-dir = "0.1.11"
