@@ -1,6 +1,6 @@
 [package]
 name = "configgen-rs"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 rust-version = "1.70.0"
 description = "An attempt to make a crate based on config that generates a default configuration file on the filesystem if it does not exist yet"
