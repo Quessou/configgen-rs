@@ -28,4 +28,5 @@ serde = {version = "1.0.173", features = ["derive", "std"]}
 thiserror = "1.0.44"
 
 [dev-dependencies]
+config = { version = "0.13.3", features = ["json", "json5", "toml", "ron"] }
 temp-dir = "0.1.11"
