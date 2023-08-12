@@ -26,7 +26,7 @@ json5_rs = { version = "0.4", optional = true, package = "json5" }
 convert_case = { version = "0.6", optional = true }
 serde = {version = "1.0.173", features = ["derive", "std"]}
 thiserror = "1.0.44"
+config = { version = "0.13.3", features = ["json", "json5", "toml", "ron"] }
 
 [dev-dependencies]
-config = { version = "0.13.3", features = ["json", "json5", "toml", "ron"] }
 temp-dir = "0.1.11"

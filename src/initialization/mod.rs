@@ -108,9 +108,9 @@ pub fn initialize_config_file(
 
 #[cfg(test)]
 mod tests {
-    use std::io::Read;
 
     use super::*;
+    use crate::utils::read_configuration;
     use config::Config;
     use serde::Deserialize;
     use temp_dir::TempDir;
@@ -132,15 +132,6 @@ mod tests {
         };
 
         (tmpdir, config_file_path, dummy_config)
-    }
-
-    fn read_configuration(config_file_path: &PathBuf) -> String {
-        let file_to_read = std::fs::File::open(&config_file_path).unwrap();
-        let mut reader = std::io::BufReader::new(file_to_read);
-        let mut buf = String::new();
-        let r = reader.read_to_string(&mut buf);
-        assert!(r.is_ok());
-        buf
     }
 
     #[test]
@@ -209,7 +200,7 @@ mod tests {
 
         let f = config::File::new(config_file_path.to_str().unwrap(), config::FileFormat::Toml);
         let config = Config::builder()
-            .add_source(config::File::from(f))
+            .add_source(f)
             .build()
             .unwrap();
         let read_config = config.try_deserialize::<DummyConfig>().unwrap();
